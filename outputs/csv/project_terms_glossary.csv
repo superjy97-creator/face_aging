@@ -1,0 +1,87 @@
+﻿분류,용어,의미,프로젝트에서의 역할
+데이터 준비,ZIP 파일,여러 파일을 하나로 묶어 압축한 파일,AI Hub 원본 이미지와 라벨링 데이터를 압축 해제하기 전 형태
+데이터 준비,압축 해제,ZIP 파일 안의 실제 파일을 꺼내는 과정,이미지 파일과 JSON 라벨 파일을 실제 폴더로 풀어 학습 준비
+데이터 준비,이미지 파일,모델이 입력으로 받는 얼굴 사진 데이터,EfficientNet-B0 모델이 나이대를 예측하기 위해 학습한 입력 데이터
+데이터 준비,JSON 라벨 파일,이미지에 대한 정답 정보가 들어있는 파일,"age_now, age_past, gender 등의 정보를 추출하는 데 사용"
+데이터 준비,CSV 파일,표 형태의 데이터를 저장하는 파일,"이미지 경로, 라벨, 학습 기록, 모델 비교 결과 저장"
+데이터 준비,file_stem,확장자를 제외한 파일 이름,이미지 파일과 JSON 라벨 파일을 같은 이름 기준으로 매칭
+데이터 준비,image_path,이미지 파일이 저장된 전체 경로,Dataset이 실제 이미지를 불러올 때 사용
+데이터 준비,json_path,JSON 라벨 파일이 저장된 전체 경로,라벨 정보를 추출할 JSON 파일 위치
+데이터 준비,이미지-JSON 매핑,이미지 파일과 해당 JSON 라벨 파일을 연결하는 과정,이미지와 정답 라벨이 모두 있는 데이터만 학습에 사용하기 위해 수행
+데이터 준비,MATCHED,이미지와 JSON이 모두 존재하는 정상 데이터,최종 학습에 사용한 데이터
+데이터 준비,MISSING_IMAGE,JSON은 있지만 이미지가 없는 상태,이미지가 없으므로 학습에서 제외
+데이터 준비,MISSING_JSON,이미지는 있지만 JSON 라벨이 없는 상태,정답 라벨이 없으므로 학습에서 제외
+데이터 준비,결측치,필요한 값이나 파일이 빠져 있는 데이터,"MISSING_IMAGE, MISSING_JSON 데이터를 결측 데이터로 보고 제외"
+라벨링,age_now,사람의 현재 나이,사진 속 나이가 아니므로 최종 학습 라벨로 사용하지 않음
+라벨링,age_past,사진이 촬영된 당시의 나이,얼굴 이미지에 나타난 실제 나이 기준으로 사용한 최종 라벨
+라벨링,label_source,어떤 값을 기준으로 라벨을 만들었는지 표시하는 컬럼,age_past 기준 라벨임을 기록
+라벨링,클래스,모델이 예측해야 하는 정답 범주,나이를 5개 나이대 그룹으로 분류
+라벨링,age_group,나이대를 숫자 클래스로 변환한 값,0~4 라벨로 모델 학습에 사용
+라벨링,age_group_name,나이대 클래스 이름,"10대 이하, 20대, 30대, 40대, 50대 이상으로 표시"
+라벨링,5개 클래스,나이대를 5개 그룹으로 나눈 분류 기준,"0=10대 이하, 1=20대, 2=30대, 3=40대, 4=50대 이상"
+라벨링,클래스 분포,각 클래스에 데이터가 몇 개씩 있는지 나타낸 값,"10대 이하 데이터가 많고 40대, 50대 이상 데이터가 적은 것을 확인"
+라벨링,클래스 불균형,특정 클래스 데이터가 다른 클래스보다 많거나 적은 상태,class_weights를 적용한 이유
+라벨링,class_weights,클래스 불균형을 보정하기 위한 가중치,데이터가 적은 클래스에 더 큰 손실 가중치를 부여
+데이터 분리,Training 데이터,모델이 실제로 학습하는 데이터,모델 가중치를 업데이트하는 데 사용
+데이터 분리,Validation 데이터,학습 중 모델 성능을 확인하는 데이터,모델이 새로운 데이터에 얼마나 잘 맞는지 확인
+데이터 분리,Train / Validation 분리,전체 데이터를 학습용과 검증용으로 나누는 과정,Training 폴더와 Validation 폴더 기준으로 분리
+데이터 분리,phase,데이터가 Training인지 Validation인지 표시하는 컬럼,image_path에서 Training/Validation을 판별해 생성
+이미지 전처리,전처리,모델에 넣기 전에 데이터를 학습 가능한 형태로 바꾸는 과정,"이미지를 224x224, Tensor, Normalize 형태로 변환"
+이미지 전처리,PIL Image,Python에서 이미지를 열고 처리하는 이미지 객체,Image.open()으로 이미지 파일을 읽는 데 사용
+이미지 전처리,RGB 변환,"이미지를 Red, Green, Blue 3채널로 맞추는 과정",모델 입력 채널을 3채널로 통일
+이미지 전처리,Resize,이미지 크기를 일정한 크기로 바꾸는 과정,모든 이미지를 224x224로 변환
+이미지 전처리,Tensor,PyTorch 모델이 계산할 수 있는 숫자 배열,이미지를 모델 입력 형태로 변환
+이미지 전처리,Normalize,픽셀 값을 평균과 표준편차 기준으로 정규화하는 과정,ImageNet pretrained 모델 기준 mean/std 적용
+이미지 전처리,Data Augmentation,이미지에 변형을 주어 데이터 다양성을 늘리는 방법,"좌우 반전, 회전을 사용해 일반화 성능 향상 시도"
+이미지 전처리,RandomHorizontalFlip,이미지를 일정 확률로 좌우 반전하는 전처리,얼굴 방향 변화에 대응하도록 학습
+이미지 전처리,RandomRotation,이미지를 일정 각도 범위에서 회전하는 전처리,촬영 각도 변화에 대응하도록 학습
+학습 구조,Dataset,이미지와 라벨을 하나씩 반환하는 PyTorch 데이터 구조,CSV에서 image_path와 age_group을 읽어 이미지와 라벨 반환
+학습 구조,DataLoader,Dataset을 batch 단위로 묶어주는 도구,학습 데이터를 batch 단위로 모델에 전달
+학습 구조,Batch Size,한 번에 모델에 넣는 이미지 개수,OOM 문제로 최종 64 사용
+학습 구조,Epoch,전체 학습 데이터를 한 번 모두 학습한 횟수,최대 15 epoch 설정
+학습 구조,Forward,입력 이미지를 모델에 넣어 예측값을 계산하는 과정,outputs = model(images)
+학습 구조,Backward,손실을 기준으로 가중치 수정 방향을 계산하는 과정,loss.backward()
+학습 구조,Loss,예측값과 정답의 차이를 나타내는 값,모델 학습의 기준값
+학습 구조,Optimizer,모델 가중치를 업데이트하는 알고리즘,Adam Optimizer 사용
+학습 구조,Adam,딥러닝에서 자주 쓰는 최적화 알고리즘,lr=0.0001로 모델 가중치 업데이트
+학습 구조,Learning Rate,가중치를 얼마나 크게 수정할지 정하는 값,0.0001 사용
+학습 구조,CrossEntropyLoss,다중 클래스 분류에서 사용하는 손실 함수,5개 나이대 분류 손실 계산
+모델,CNN,이미지 특징 추출에 강한 딥러닝 구조,"EfficientNet-B0, MobileNetV2의 기반 구조"
+모델,EfficientNet-B0,성능과 계산량의 균형이 좋은 이미지 분류 모델,최종 선택 모델
+모델,MobileNetV2,가볍고 빠른 이미지 분류 모델,2차 비교 모델
+모델,Pretrained Model,대규모 이미지 데이터로 미리 학습된 모델,처음부터 학습하지 않고 이미지 특징을 활용
+모델,Classifier,모델의 마지막 분류기 부분,1000개 출력에서 5개 출력으로 교체
+모델,Linear Layer,입력 특징을 최종 클래스 점수로 바꾸는 층,EfficientNet-B0 마지막 레이어를 5클래스로 변경
+모델,Checkpoint,학습 중 저장한 모델 상태 파일,"best 모델, last 모델 저장"
+모델,state_dict,PyTorch 모델의 가중치 정보,웹앱에서 best 모델 가중치 로드
+모델,Best Model,검증 성능이 가장 좋았던 시점의 모델,웹앱 최종 사용 모델
+모델,Last Model,학습 마지막 시점의 모델,best 모델과 비교용으로 저장
+성능 평가,Train Loss,학습 데이터에서 계산한 손실값,학습 데이터에 얼마나 잘 맞는지 확인
+성능 평가,Validation Loss,검증 데이터에서 계산한 손실값,Best Model 선택 기준
+성능 평가,Train Accuracy,학습 데이터 정답률,학습 진행 정도 확인
+성능 평가,Validation Accuracy,검증 데이터 정답률,모델 성능 비교 기준
+성능 평가,Best Val Loss,가장 낮았던 Validation Loss,EfficientNet-B0 best 모델 저장 기준
+성능 평가,Best Val Acc,가장 높았던 Validation Accuracy,모델 성능 비교 지표
+성능 평가,Confusion Matrix,실제 라벨과 예측 라벨을 비교하는 표,어떤 나이대를 헷갈리는지 확인
+성능 평가,True Label,실제 정답 라벨,Confusion Matrix의 실제 클래스
+성능 평가,Predicted Label,모델이 예측한 라벨,Confusion Matrix의 예측 클래스
+성능 평가,Overfitting,학습 데이터에는 잘 맞지만 검증 데이터 성능이 떨어지는 현상,EfficientNet-B0 후반부에서 Val Loss 증가로 확인
+성능 평가,EarlyStopping,검증 성능 개선이 없으면 학습을 자동 중단하는 방법,Val Loss가 5번 연속 개선되지 않으면 중단
+그래프,History CSV,epoch별 학습 결과를 저장한 CSV,학습 그래프 생성에 사용
+그래프,Line Graph,값의 변화를 선으로 보여주는 그래프,"epoch별 Loss, Accuracy 변화 시각화"
+그래프,Bar Graph,값을 막대로 비교하는 그래프,"모델별 Best Val Acc, Best Val Loss, 학습 시간 비교"
+그래프,Validation Accuracy 그래프,검증 정확도의 변화를 보여주는 그래프,모델 성능 변화 확인
+그래프,Validation Loss 그래프,검증 손실의 변화를 보여주는 그래프,과적합 여부 확인
+그래프,Train vs Validation 그래프,학습 성능과 검증 성능을 함께 비교하는 그래프,일반화 성능과 과적합 확인
+환경/오류,CUDA,NVIDIA GPU를 이용해 딥러닝 연산을 빠르게 처리하는 기술,RTX 4060 GPU 학습에 사용
+환경/오류,GPU,딥러닝 행렬 연산을 빠르게 처리하는 장치,모델 학습 가속
+환경/오류,CPU,일반 연산과 데이터 로딩을 담당하는 장치,이미지 파일 로딩과 전처리 일부 담당
+환경/오류,OutOfMemoryError,GPU 메모리가 부족할 때 발생하는 오류,batch size 160에서 발생해 64로 줄임
+환경/오류,DecompressionBombWarning,PIL이 매우 큰 이미지를 열 때 띄우는 경고,일부 대형 AI Hub 이미지에서 발생
+환경/오류,requirements.txt,실행에 필요한 Python 패키지 목록 파일,Streamlit 웹앱 실행 및 배포 준비
+웹앱,Streamlit,Python으로 웹앱을 만드는 도구,나이대 분석 웹앱 제작
+웹앱,app.py,Streamlit 웹앱 실행 파일,"웹캠 촬영, 모델 로드, 예측 결과 출력"
+웹앱,st.camera_input,Streamlit의 웹캠 촬영 기능,웹캠으로 얼굴 이미지 촬영
+웹앱,Inference,학습된 모델로 새로운 데이터를 예측하는 과정,촬영 이미지를 나이대로 분류
+웹앱,Softmax,모델 출력값을 클래스별 확률로 변환하는 함수,5개 나이대별 예측 확률 계산
+웹앱,Confidence,모델이 최종 예측에 대해 얼마나 확신하는지 나타내는 값,웹앱에서 예측 신뢰도로 표시

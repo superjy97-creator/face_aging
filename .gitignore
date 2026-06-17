@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# AI Hub raw data
+01-1.정식개방데이터/
+extracted/
+data/
+*.zip
+
+# Large/raw image and label files
+*.jpg
+*.jpeg
+*.bmp
+*.json
+
+# Allow result figures
+!outputs/figures/*.png
+
+# Model files
+outputs/models/*
+!outputs/models/efficientnet_b0_age_past_5class_best.pth
+
+# Streamlit cache
+.streamlit/
